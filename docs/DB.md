@@ -5,7 +5,6 @@ The DB setup is Postgres + Drizzle
 ## Key Packages
 
 - `@repo/db` (`packages/db`) - Contains schema and Drizzle config. Used for migrations. Builds to `dist/`
-- `@repo/contracts` (`packages/contracts`) - Zod schemas derived from `@repo/db` tables via `drizzle-zod`
 - `@repo/api` (`apps/api`) - Consumes `@repo/db` at runtime through `DrizzleService` (`src/modules/drizzle`)
 
 ## Environment
@@ -33,8 +32,7 @@ Run from the repo root (they proxy to `pnpm --filter @repo/db ...`):
 1. Edit `packages/db/src/schema.ts`. Keep column/table names explicit and `snake_case` (the client and config both run
    `casing: 'snake_case'`)
 2. `pnpm db:generate` then `pnpm db:migrate` (or `pnpm db:push` in dev). Migration's SQL can be edited if needed
-3. `@repo/contracts` updates itself - `drizzle-zod` runs at import time, there is no codegen step
-4. `@repo/db` must be built before `apps/api` runs. Turbo handles the ordering when ran via `pnpm build`. Iff you run
+3. `@repo/db` must be built before `apps/api` runs. Turbo handles the ordering when ran via `pnpm build`. Iff you run
    things manually, run `pnpm --filter @repo/db build` first
 
 ## Querying
@@ -42,26 +40,20 @@ Run from the repo root (they proxy to `pnpm --filter @repo/db ...`):
 Inject `DrizzleService` and use `.db`:
 
 ```ts
-constructor(private
-readonly
-drizzle: DrizzleService
-)
-{
-}
+constructor(private readonly drizzle: DrizzleService) {}
 
 // Use query builder
 await this.drizzle.db.select().from(users).where(eq(users.id, id));
 
 // Or relational API (relations are defined in schema.ts)
 await this.drizzle.db.query.users.findMany({
-    with: {
-        connections_group: true
-    }
+  with: {
+    connections_group: true
+  }
 });
 ```
 
 Table objects and column helpers are imported from `@repo/db/schema` \
-Zod row schemas are imported from `@repo/contracts`
 
 ## Gotchas
 

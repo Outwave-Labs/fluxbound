@@ -26,7 +26,6 @@ export class AuthService {
    */
   async code(body: contracts.auth.Code) {
     const [exists = null] = await this.drizzleService.db.select().from(db.users).where(eq(db.users.email, body.email));
-
     switch (body.type) {
       case "signup": {
         // does the user exist?

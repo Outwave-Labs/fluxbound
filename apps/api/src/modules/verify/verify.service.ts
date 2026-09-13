@@ -3,7 +3,7 @@ import { contracts } from "@repo/contracts";
 import { DrizzleService } from "../drizzle/drizzle.service.js";
 import { generateVerificationEmail } from "../mail/lib/constants.js";
 import { MailService } from "../mail/mail.service.js";
-import { id, random } from "@repo/lib";
+import { lib } from "@repo/lib";
 import { db } from "@repo/db";
 import { and, eq, gte } from "drizzle-orm";
 import { Exception } from "../../shared/lib/exception.js";
@@ -26,8 +26,8 @@ export class VerifyService {
     const [code] = await this.drizzleService.db
       .insert(db.verification_codes)
       .values({
-        id: id.create(),
-        code: random.string(config.auth.code.length, "0123456789"),
+        id: lib.id.create(),
+        code: lib.random.string(config.auth.code.length, "0123456789"),
         email: params.email,
         type: params.type,
         expiry_at: new Date(Date.now() + config.auth.code.expiryMs),

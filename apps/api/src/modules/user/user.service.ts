@@ -4,11 +4,11 @@ import definition from "@dicebear/styles/identicon.json" with { type: "json" };
 import { Injectable } from "@nestjs/common";
 import bcrypt from "bcryptjs";
 import { DrizzleService } from "../drizzle/drizzle.service.js";
-import { id, random, strings } from "@repo/lib";
 import { contracts } from "@repo/contracts";
 import { db } from "@repo/db";
 import { eq, like } from "drizzle-orm";
 import { Exception } from "../../shared/lib/exception.js";
+import { lib } from "@repo/lib";
 
 @Injectable()
 export class UserService {
@@ -22,7 +22,7 @@ export class UserService {
   async generateUsername(body: contracts.user.Create["email"]) {
     // normalizing
     const username = body.split("@")[0] ?? "";
-    const normalizedUsername = strings.normalize(username);
+    const normalizedUsername = lib.strings.normalize(username);
 
     // not eixsting - return generated
     if (!(await this.drizzleService.db.query.users.findFirst({ where: eq(db.users.username, normalizedUsername) }))) {
@@ -42,7 +42,7 @@ export class UserService {
     const taken = new Set(existing.map(({ username }) => username));
 
     for (let i = 0; i < 64; ++i) {
-      const candidate = `${normalizedUsername}${id.create()}`;
+      const candidate = `${normalizedUsername}${lib.id.create()}`;
 
       if (!taken.has(candidate)) {
         return candidate;
@@ -78,7 +78,7 @@ export class UserService {
     }
 
     // cosmetics
-    const color = random.hex();
+    const color = lib.random.hex();
     const style = new Style(definition);
     const avatar = new Avatar(style, {
       seed: body.email,
@@ -86,13 +86,13 @@ export class UserService {
     });
 
     // username
-    const username = strings.normalize(body.username ?? "") || (await this.generateUsername(body.email));
+    const username = lib.strings.normalize(body.username ?? "") || (await this.generateUsername(body.email));
 
     // creating the user
     const [user] = await this.drizzleService.db
       .insert(db.users)
       .values({
-        id: body.userId ?? id.create(),
+        id: body.userId ?? lib.id.create(),
         username,
         email: body.email,
         password,

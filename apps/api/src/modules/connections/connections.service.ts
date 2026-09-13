@@ -8,8 +8,8 @@ import { AppJwtService } from "../jwt/jwt.service.js";
 import { VerifyService } from "../verify/verify.service.js";
 import { db } from "@repo/db";
 import { and, eq, inArray } from "drizzle-orm";
-import { id } from "@repo/lib";
 import { Exception } from "../../shared/lib/exception.js";
+import { lib } from "@repo/lib";
 
 @Injectable()
 export class ConnectionsService {
@@ -123,7 +123,7 @@ export class ConnectionsService {
     const { connection } = await this.connectionCreate({
       groupId: body.groupId,
       userId: user.id,
-      connectionId: body.connectionId ?? id.create(),
+      connectionId: body.connectionId ?? lib.id.create(),
     });
 
     return { user, connection };
@@ -149,7 +149,7 @@ export class ConnectionsService {
     const [connection] = await this.drizzleService.db
       .insert(db.connections)
       .values({
-        id: body.connectionId ?? id.create(),
+        id: body.connectionId ?? lib.id.create(),
         user_id: body.userId,
         group_id: body.groupId,
       })
@@ -191,7 +191,7 @@ export class ConnectionsService {
     const [group] = await this.drizzleService.db
       .insert(db.connections_group)
       .values({
-        id: body.groupId ?? id.create(),
+        id: body.groupId ?? lib.id.create(),
         owner_user_id: user.id,
         title: body.title,
         emoji: body.emoji,
@@ -206,7 +206,7 @@ export class ConnectionsService {
     const [connection] = await this.drizzleService.db
       .insert(db.connections)
       .values({
-        id: body.connectionId ?? id.create(),
+        id: body.connectionId ?? lib.id.create(),
         user_id: user.id,
         group_id: group.id,
       })

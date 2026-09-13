@@ -10,7 +10,7 @@ import { AuthContextType } from "../auth-core/decorators/authcontext.decorator.j
 import { AppConfigService } from "../config/config.service.js";
 import { EnvSchema } from "../config/config.types.js";
 import { shared } from "@repo/contracts";
-import { id, random } from "@repo/lib";
+import { lib } from "@repo/lib";
 import { db } from "@repo/db";
 import { eq } from "drizzle-orm";
 import { Exception } from "../../shared/lib/exception.js";
@@ -143,7 +143,7 @@ export class AppJwtService {
     const [session] = await this.drizzleService.db
       .insert(db.auth_sessions)
       .values({
-        id: id.create(),
+        id: lib.id.create(),
         user_id: params.userId,
         refresh_token_hash: "",
         expiry_at: new Date(Date.now() + config.auth.refreshToken.expiryMs),
@@ -222,9 +222,9 @@ export class AppJwtService {
         const [group = null] = await this.drizzleService.db
           .insert(db.connections_group)
           .values({
-            id: id.create(),
+            id: lib.id.create(),
             title: "Default",
-            emoji: random.groupEmoji(),
+            emoji: lib.random.groupEmoji(),
             owner_user_id: params.userId,
           })
           .returning();
@@ -234,7 +234,7 @@ export class AppJwtService {
         }
 
         await this.drizzleService.db.insert(db.connections).values({
-          id: id.create(),
+          id: lib.id.create(),
           user_id: params.userId,
           group_id: group.id,
         });
